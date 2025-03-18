@@ -1,0 +1,7 @@
+[package]
+name = "file_chunk_sender"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+indicatif = { version = "0.17.11", features = ["in_memory"] }
