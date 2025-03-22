@@ -1,2 +1,6 @@
 /target
 Cargo.lock
+test.wav
+ClientConf.toml
+ServerConf.toml
+/tmp
