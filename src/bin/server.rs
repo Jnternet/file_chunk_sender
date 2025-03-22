@@ -1,9 +1,18 @@
+use file_chunk_sender::config;
+use file_chunk_sender::config::Conf;
+use file_chunk_sender::file_trans;
 fn main() {
-    let tcp_listener = std::net::TcpListener::bind("127.0.0.1:3000").unwrap();
+    let config = match config::ServerConfig::<String>::read_from_path("./ServerConf.toml") {
+        Ok(config) => config,
+        Err(e) => {
+            eprintln!("读取失败:{:?},初始化", e);
+            let config: config::ServerConfig<String> = config::ServerConfig::default();
+            config.set_config_to_path("./ServerConf.toml").unwrap();
+            config
+        }
+    };
+    let tcp_listener = std::net::TcpListener::bind(config.ip()).unwrap();
     let (mut tcp, _addr) = tcp_listener.accept().unwrap();
-    let file_path = "./test.wav";
-    let chunk_size = 1 * MB;
-    file_chunk_sender::send_file_chunks_pb(&mut tcp, file_path, chunk_size).unwrap();
+    let sent_size = file_trans::send_ds(&config, &mut tcp).unwrap();
+    dbg!(sent_size);
 }
-
-const MB: usize = 1024 * 1024;
